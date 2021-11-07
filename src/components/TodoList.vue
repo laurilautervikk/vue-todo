@@ -10,7 +10,8 @@
             :key="todo"
             class="list-group-item"
           >
-            {{ todo.title }} {{ todo.status }}
+            <p>{{ todo.title }}</p>
+            <p>{{ todo.status }}</p>
           </li>
         </ul>
       </div>
@@ -20,6 +21,7 @@
         <input
           v-model="newTodo"
           type="text"
+          id="newTodo"
           name="newTodo"
           class="form-control"
         />
@@ -32,6 +34,7 @@
     </div>
   </div>
 </template>
+
 <script>
 import { ref } from "vue";
 import axios from "axios";
@@ -39,9 +42,10 @@ export default {
   name: "TodoList",
   props: {
     title: String,
+    status: String,
   },
   setup() {
-    const todos = ref(["Read a book", "Go for a walk", "Eat food"]);
+    //const todos = ref(["Read a book", "Go for a walk", "Eat food"]);
     const newTodo = ref("");
 
     const todosFromServer = ref([]);
@@ -54,17 +58,43 @@ export default {
 
     getTodos();
 
-    async function addNewTodo(todoload) {
+    async function addNewTodo() {
       // POST request using axios with async/await
-      const response = await axios.post("/api/post-todos", todoload);
-      //problem here
-      this.packageId = response.data.id;
+      const headers = {
+        "Content-Type": "application/json",
+      };
+
+      /* const headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        "Access-Control-Allow-Origin": "*",
+        "Accept": "application/json"
+        }; */
+
+      let data = {
+        title: newTodo.value,
+        status: "ACTIVE",
+      };
+
+      await axios.post("/api/post-todos", data, {
+          headers: headers,
+        })
+        .then(function (res) {
+          console.log(res);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+
+      console.log("newTodo front: ", data);
+
+      getTodos();
     }
 
-    addNewTodo(newTodo.value);
+    /* function addNewTodo(todoload) {
+      console.log('the load: ', todoload)
+    } */
 
     return {
-      todos,
       newTodo,
       addNewTodo,
       todosFromServer,
