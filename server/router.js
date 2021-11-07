@@ -31,10 +31,17 @@ router.get("/get-todos", function (req, res) {
 
 // POST method route
 router.post("/post-todos", function (req, res) {
-  exampleTodos.push(req.data);
-  console.log("request: ", req);
+  exampleTodos.push(req.body);
+  console.log("req.body: ", req.body);
   console.log("new list: ", exampleTodos);
-  res.send("You made a successful POST request to the homepage");
+  res.send("POST request successful");
 });
+
+/* router.post("/post-todos", function (req, res) {
+  let title = req.title;
+  console.log('req: ', req.body)
+  console.log("title: ", title);
+  res.end("yes");
+}); */
 
 module.exports = router;
