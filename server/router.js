@@ -1,14 +1,14 @@
 const express = require("express");
 const router = express.Router();
 
-router.get("/calc", function (req, res) {
+/* router.get("/calc", function (req, res) {
   const a = 23;
   const b = 24;
   const d = new Date();
   const result = String(a + b + " ---- " + d);
 
   res.send(result);
-});
+}); */
 
 const exampleTodos = [
   {
@@ -31,7 +31,10 @@ router.get("/get-todos", function (req, res) {
 
 // POST method route
 router.post("/post-todos", function (req, res) {
-  res.send("POST request to the homepage");
+  exampleTodos.push(req.data);
+  console.log("request: ", req);
+  console.log("new list: ", exampleTodos);
+  res.send("You made a successful POST request to the homepage");
 });
 
 module.exports = router;
