@@ -2,12 +2,12 @@ const express = require("express");
 const router = express.Router();
 const { Todos } = require("./dbConnection");
 
-router.get("/calc", function (req, res) {
+/* router.get("/calc", function (req, res) {
   const a = 4;
   const b = 4;
   const result = a + b;
   res.send({ result });
-});
+}); */
 
 // request === req ja response === res
 router.get("/get-todos", async function (request, response) {

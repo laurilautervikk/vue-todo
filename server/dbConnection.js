@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 // Connecting to database
 mongoose.connect(
-  "mongodb+srv://test:test@cluster0.l3qaq.mongodb.net/todoapp?retryWrites=true&w=majority",
+  "mongodb://hapukapsas:hapukapsas@cluster1-shard-00-00.ckjul.mongodb.net:27017,cluster1-shard-00-01.ckjul.mongodb.net:27017,cluster1-shard-00-02.ckjul.mongodb.net:27017/todoapp?ssl=true&replicaSet=atlas-13b4s0-shard-0&authSource=admin&retryWrites=true&w=majority",
   { useNewUrlParser: true }
 );
 const Schema = mongoose.Schema;
@@ -12,7 +12,7 @@ const TodoSchema = new Schema({
   status: { type: String },
 });
 
-const Todos = mongoose.model("Todos", TodoSchema);
+const Todos = mongoose.model("todos", TodoSchema);
 
 module.exports = {
   Todos,
