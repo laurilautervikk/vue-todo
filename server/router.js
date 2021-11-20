@@ -12,7 +12,7 @@ const { Todos } = require("./dbConnection");
 //Get all todos
 router.get("/get-todos", async function (request, response) {
   const result = await Todos.find();
-  console.log(result);
+  //console.log(result);
   response.send(result);
 });
 
@@ -23,11 +23,26 @@ router.get("/get-todo/:id", async function (request, response) {
   response.send(result);
 });
 
-//Change one todo
-router.patch("/patch-todo/:id", async function (request, response) { //NOT WORKING
-  const result = await Todos.updateOne({ _id: request.params.id },{$set: {STATUS: req.body.STATUS}});
-  console.log("/patch-todo/:id ",result);//NOT WORKING
-  response.send("/patch-todo/:id ",result);//NOT WORKING
+//Change one todo state
+router.patch("/patch-todo/:id", async function (request, response) {
+  //console.log("BE started");
+  let state = await Todos.findOne({ _id: request.params.id });
+  //console.log("BE state: ", state.status);
+  //set value for update query, based on current state from db
+  let flipflop = "";
+  if (state.status === "ACTIVE") {
+    flipflop = "DONE";
+  } else {
+    flipflop = "ACTIVE";
+  }
+  //display state value
+  //console.log('BE flipflop ', flipflop);
+  const result = await Todos.updateOne(
+    { _id: request.params.id },
+    { $set: { status: flipflop } }
+  );
+  console.log("state Flipped to: ", flipflop);
+  response.send(result);
 });
 
 //Delete one todo
@@ -37,14 +52,13 @@ router.post("/delete-todo/:id", async function (request, response) {
   response.send(result);
 });
 
-
 //Add a new todo
 router.post("/add-todo", async function (request, response) {
   if (request.body.title) {
     await Todos.create(request.body);
-    console.log("Lisa todo");
+    console.log("BE Add todo");
   }
-  response.send("done");
+  response.send("BE Add todo done");
 });
 
 module.exports = router;

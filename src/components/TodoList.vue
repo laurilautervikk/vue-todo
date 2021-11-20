@@ -1,31 +1,45 @@
 <template>
   <div>
     <div class="row">
-      <div class="col-6">
+      <div class="col-lg-6 col-md-6 col-sm-12">
         <h2>{{ title }}</h2>
 
         <ul class="list-group mb-3">
           <li
+            class="list-group-item"
+            v-bind:class="{ completed: todo.status === 'DONE' }"
             v-for="todo in todosFromServer"
             :key="todo"
-            class="list-group-item"
             @click="getTodo(todo._id)"
           >
-          <p>{{ todo.title }}</p>
-          <p>{{ todo.status }}</p><!-- MUUDA STATUS > 'ACTIVE: true'
-          sealt edasi areta IF ELSE ja muuda kujundust vms -->
-          <button @click="completeTodo(todo._id)" type="submit" class="btn btn-primary m-1">
-          It's Done
-        </button>
-        <button @click="deleteTodo(todo._id)" type="submit" class="btn btn-primary m-1">
-          Delete
-        </button>
+            <!-- Displays info -->
+            <p>{{ todo.title }}</p>
+            <p>{{ todo.status }}</p>
+            <button
+              @click="completeTodo(todo._id)"
+              type="submit"
+              class="btn btn-primary m-1"
+            >
+              {{ changeState(todo.status) }}
+            </button>
+            <button
+              @click="deleteTodo(todo._id)"
+              type="submit"
+              class="btn btn-primary m-1"
+            >
+              Delete
+            </button>
           </li>
         </ul>
       </div>
+      <div class="col-lg-4 col-md-4 col-sm-12 my-5">
+        <div>
+          <p><span>CONTENT:</span>{{ singleTodo }}</p>
+        </div>
+      </div>
     </div>
     <div class="row">
-      <div class="col-6">
+      <div class="col-lg-6 col-md-6 col-sm-12">
         <input
           v-model="newTodo"
           type="text"
@@ -35,13 +49,16 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-6">
-        <button @click="addTodo" type="submit" class="btn btn-primary w-100 mt-1">
+      <div class="col-lg-6 col-md-6 col-sm-12">
+        <button
+          @click="addTodo"
+          type="submit"
+          class="btn btn-primary w-100 mt-1"
+        >
           Add new todo
         </button>
       </div>
     </div>
-    {{ singleTodo }}
   </div>
 </template>
 
@@ -54,7 +71,6 @@ export default {
   props: {
     title: String,
   },
-
   setup() {
     const newTodo = ref("");
 
@@ -75,20 +91,19 @@ export default {
       console.log(result.data);
     }
 
-    //Change one todo
-    async function completeTodo(id) {//NOT WORKING
-      await axios.post(`/api/patch-todo/" + ${id}`, {//NOT WORKING
-        title: 'whatever',//NOT WORKING
-        status: "DONE",//NOT WORKING
-      });
-      console.log('sent a patch something')
+    //Change todo state, logic is in BE
+    async function completeTodo(id) {
+      console.log("FE status update started", id);
+      const result = await axios.patch("/api/patch-todo/" + id);
+      console.log("FE status update sent: ", result.data.status);
+      await getTodos();
     }
 
     //Delete one todo
     async function deleteTodo(id) {
       const result = await axios.post("/api/delete-todo/" + id);
       singleTodo.value = result.data;
-      console.log(result.data);
+      console.log("Delete todo: ", result.data);
       await getTodos();
     }
 
@@ -104,9 +119,9 @@ export default {
 
     getTodos();
 
-   
-
     return {
+      todoComplete: "Complete",
+      todoActivate: "Activate",
       newTodo,
       todosFromServer,
       addTodo,
@@ -115,13 +130,31 @@ export default {
       getTodos,
       completeTodo,
       deleteTodo,
+      /* activeClass: "bg-light",
+      doneClass: "bg-secondary", */
     };
   },
+  methods: {
+    changeState(input) {
+      if (input === "ACTIVE") {
+        return this.todoComplete;
+      } else {
+        return this.todoActivate;
+      }
+    },
+  },
+  /* changeBg(input) {
+    if (input === "ACTIVE") {
+      return this.activeClass;
+    } else {
+      return this.doneClass;
+    }
+  }, */
 };
 </script>
 
 <style scoped>
-.done {
-  text-decoration: line-through;
+.completed {
+  background-color: silver;
 }
 </style>
